@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورقة — مصمّم أوراق الأسئلة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #e8ece9;
+      --bg-card: #f4f6f4;
+      --bg-input: #ffffff;
+      --primary-green: #0d5c46;
+      --primary-green-hover: #084232;
+      --text-dark: #1f2937;
+      --text-muted: #6b7280;
+      --border-color: #d1d5db;
+      
+      --paper-font: 'Amiri', serif;
+      --paper-font-size: 13pt;
+      --paper-line-height: 1.4;
+      --paper-q-space: 2mm;
+      --paper-border-style: none;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      font-family: 'Cairo', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      background-color: var(--bg-main);
+      padding: 0.6rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      height: 60px;
+    }
+
+    .top-brand { display: flex; align-items: center; gap: 0.8rem; }
+
+    .brand-logo {
+      background-color: var(--primary-green);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .brand-title h1 { font-size: 1.1rem; font-weight: 800; color: var(--primary-green); }
+
+    .header-actions { display: flex; gap: 0.6rem; align-items: center; }
+
+    .btn {
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    .btn-green { background-color: var(--primary-green); color: white; }
+    .btn-green:hover { background-color: var(--primary-green-hover); }
+    .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-dark); }
+    .btn-outline:hover { background-color: #d1d5db; }
+    .btn-sm { padding: 0.25rem 0.6rem; font-size: 0.75rem; }
+
+    .app-layout {
+      display: flex;
+      flex-direction: row;
+      flex: 1;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+
+    .controls-section {
+      width: 58%;
+      display: flex;
+      background-color: var(--bg-card);
+      border-left: 1px solid var(--border-color);
+    }
+
+    .sidebar-summary {
+      width: 220px;
+      background-color: var(--bg-card);
+      border-left: 1px solid var(--border-color);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .steps-nav { display: flex; flex-direction: column; gap: 0.8rem; }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .step-item.active { background-color: #e2e8f0; color: var(--primary-green); }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .step-item.active .step-number { background-color: var(--primary-green); color: white; }
+
+    .summary-card {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .score-big { font-size: 2.2rem; font-weight: 800; color: var(--primary-green); }
+
+    .summary-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.6rem;
+    }
+
+    .form-builder {
+      flex: 1;
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+    }
+
+    .preview-section {
+      width: 42%;
+      background-color: var(--bg-main);
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .preview-header-bar {
+      width: 100%;
+      max-width: 210mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .a4-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+      width: 100%;
+    }
+
+    .a4-sheet {
+      background: white;
+      width: 210mm;
+      height: 297mm;
+      padding: 8mm;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      font-family: var(--paper-font);
+      font-size: var(--paper-font-size);
+      line-height: var(--paper-line-height);
+      color: #000;
+      position: relative;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .paper-frame {
+      border: var(--paper-border-style);
+      height: 100%;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .exam-header-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.9em;
+      border-bottom: 1px solid #000;
+      padding-bottom: 4px;
+      margin-bottom: 4px;
+    }
+
+    .header-right-col {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .exam-header-grid div { line-height: 1.2; }
+
+    .note-line {
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.85em;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #000;
+      margin-bottom: 6px;
+    }
+
+    .paper-questions { display: flex; flex-direction: column; gap: var(--paper-q-space); flex: 1; }
+
+    .paper-q-item {
+      padding-bottom: 4px;
+      margin-bottom: 2px;
+    }
+
+    .paper-q-item:not(:last-child) {
+      border-bottom: 1px solid #999;
+    }
+
+    .paper-q-title { display: flex; justify-content: space-between; font-weight: bold; white-space: pre-wrap; }
+    .paper-q-sub { padding-right: 14px; white-space: pre-wrap; }
+
+    .branch-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1px;
+    }
+
+    .branch-text { white-space: pre-wrap; }
+
+    .answer-line {
+      border-bottom: 1px dotted #888;
+      height: 18px;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .paper-footer {
+      margin-top: auto;
+      padding-top: 4px;
+      border-top: 1px solid #000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85em;
+      font-weight: bold;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.8rem; width: 100%; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; width: 100%; }
+    label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+
+    input, select, textarea {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 0.55rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+      font-family: 'Cairo', sans-serif;
+      resize: vertical;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus { border-color: var(--primary-green); }
+
+    .q-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      width: 100%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      transition: all 0.2s ease;
+    }
+
+    /* رأس بطاقة السؤال مع شريط الأيقونات العلوي اليسار */
+    .q-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .q-box-header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .q-num-badge {
+      background: #e2e8f0;
+      color: var(--primary-green);
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .q-box-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .action-icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 0.3rem 0.4rem;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .action-icon-btn:hover {
+      background: #e2e8f0;
+      color: var(--primary-green);
+    }
+
+    .action-icon-btn.btn-delete:hover {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+
+    .text-format-toolbar { display: flex; gap: 0.6rem; margin-bottom: 0.3rem; }
+
+    .format-btn {
+      background: #e2e8f0;
+      border: none;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      color: var(--text-dark);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .format-btn:hover { background: var(--primary-green); color: white; }
+
+    .branches-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .branch-input-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .branch-input-box textarea {
+      flex: 1;
+      width: 100%;
+    }
+
+    .branch-score-input {
+      width: 70px !important;
+      min-width: 70px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .btn-delete-icon {
+      background: none;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .btn-delete-icon:hover { color: #ef4444; }
+
+    .add-branch-btn {
+      color: var(--primary-green);
+      background: none;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.4rem;
+      margin-bottom: 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .extra-options-toggle {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0;
+      margin-top: 0.4rem;
+      transition: color 0.2s ease;
+    }
+
+    .extra-options-toggle:hover {
+      color: var(--primary-green);
+    }
+
+    .extra-options-content {
+      display: none;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.8rem;
+      margin-top: 0.6rem;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .extra-options-content.open {
+      display: flex;
+    }
+
+    .checkbox-label-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      font-size: 0.83rem;
+      color: var(--text-dark);
+      user-select: none;
+    }
+
+    .checkbox-label-right input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary-green);
+      cursor: pointer;
+    }
+
+    .teacher-item-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      width: 100%;
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    @media print {
+      body { background: white !important; overflow: visible !important; height: auto !important; }
+      header, .controls-section, .preview-header-bar { display: none !important; }
+      .app-layout { height: auto !important; display: block !important; overflow: visible !important; }
+      .preview-section { width: 100% !important; padding: 0 !important; overflow: visible !important; display: block !important; }
+      .a4-wrapper { gap: 0 !important; display: block !important; }
+      .a4-sheet { box-shadow: none !important; margin: 0 !important; width: 210mm !important; height: 297mm !important; page-break-after: always !important; display: block !important; }
+      @page { size: A4 portrait; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="top-brand">
+      <div class="brand-logo">ورقة</div>
+      <div class="brand-title">
+        <h1>أمثلة مرتّبة. بكل بساطة.</h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span style="font-size:0.75rem; color:var(--text-muted);">محفوظ تلقائياً</span>
+      <button class="btn btn-outline" onclick="resetForm()">+ امتحان جديد</button>
+      <button class="btn btn-green" onclick="window.print()">🖨️ طباعة الأسئلة</button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <div class="controls-section">
+      <div class="sidebar-summary">
+        <div class="steps-nav">
+          <div class="step-item active" onclick="switchTab(1)" id="step-btn-1">
+            <span class="step-number">1</span>
+            <span>بيانات الامتحان</span>
+          </div>
+          <div class="step-item" onclick="switchTab(2)" id="step-btn-2">
+            <span class="step-number">2</span>
+            <span>الأسئلة والدرجات</span>
+          </div>
+          <div class="step-item" onclick="switchTab(3)" id="step-btn-3">
+            <span class="step-number">3</span>
+            <span>تنسيق الورقة</span>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div style="font-size: 0.75rem; color: var(--text-muted);">ملخص امتحانك</div>
+          <div class="score-big" id="sum-score">0</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">من 100 المطلوبة</div>
+
+          <div class="summary-info">
+            <span>عدد الأسئلة: <b id="sum-q-count">0 أسئلة</b></span>
+            <span>الصفحات: <b id="sum-p-count">1 صفحة</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-builder">
+
+        <div class="tab-pane active" id="tab-1">
+          <h3 style="margin-bottom:1rem; color:var(--primary-green);">بيانات ورقة الامتحان</h3>
+          
+          <div class="form-group">
+            <label>الدولة</label>
+            <input type="text" id="in-ministry" value="جمهوريه العراق وزارة التربية" oninput="updateExamData()">
+          </div>
+          <div class="form-group">
+            <label>المديرية</label>
+            <input type="text" id="in-directorate" value="مديرية التربية" oninput="updateExamData()">
+          </div>
+          <div class="form-group">
+            <label>اسم المدرسة</label>
+            <input type="text" id="in-school" value="اعداديه النعيميه للبنين" oninput="updateExamData()">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>الصف / المرحلة</label>
+              <input type="text" id="in-grade" value="الخامس الأدبي" oninput="updateExamData()">
+            </div>
+            <div class="form-group">
+              <label>المادة</label>
+              <input type="text" id="in-subject" value="اللغة العربية" oninput="updateExamData()">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>تاريخ الامتحان</label>
+              <input type="text" id="in-date" value="2026/10/08" oninput="updateExamData()">
+            </div>
+            <div class="form-group">
+              <label>مدة الامتحان</label>
+              <input type="text" id="in-time" value="ساعة" oninput="updateExamData()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>ملاحظة للطلاب</label>
+            <input type="text" id="in-note" value="ملاحظة: الإجابة عن 4 أسئلة فقط" oninput="updateExamData()">
+          </div>
+
+          <div class="form-group">
+            <label>أساتذة المادة / اللجنة الامتحانية</label>
+            <div id="teachers-inputs-container"></div>
+            <button class="add-branch-btn" onclick="addTeacherField()">+ إضافة مدرس آخر</button>
+          </div>
+
+          <div class="form-group">
+            <label>العبارة الختامية (أسفل الصفحة)</label>
+            <input type="text" id="in-footer-closing" value="مع تمنايتنا لكم بالنجاح والتوفيق" oninput="updateExamData()">
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-2">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3 style="color:var(--primary-green);">الأسئلة والدرجات</h3>
+            <button class="btn btn-green btn-sm" onclick="addQuestion()">+ إضافة سؤال جديد</button>
+          </div>
+
+          <div id="questions-builder-list"></div>
+        </div>
+
+        <div class="tab-pane" id="tab-3">
+          <h3 style="margin-bottom:1rem; color:var(--primary-green);">تنسيق ورقة الأسئلة</h3>
+
+          <div class="form-group">
+            <label>خط ورقة الأسئلة</label>
+            <select id="cfg-font" onchange="updateFormatting()">
+              <option value="'Amiri', serif">نسخ - واضح ومريح (Amiri)</option>
+              <option value="'Noto Naskh Arabic', serif">خط النسخ الحديث</option>
+              <option value="'Cairo', sans-serif">خط القاهرة (Modern)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>إطار الصفحة</label>
+            <select id="cfg-border-style" onchange="updateFormatting()">
+              <option value="none" selected>بدون إطار</option>
+              <option value="1px solid #000">إطار بسيط (مفرد)</option>
+              <option value="4px double #000">إطار كلاسيكي (مزدوج)</option>
+              <option value="3px solid #000">إطار سميك محيط</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>حجم الخط (<span id="val-font-size">13</span> pt)</label>
+            <input type="range" id="cfg-size" min="10" max="18" value="13" oninput="updateFormatting()">
+          </div>
+
+          <div class="form-group">
+            <label>ارتفاع السطر (<span id="val-line-height">1.4</span>)</label>
+            <input type="range" id="cfg-line" min="1.1" max="2.0" step="0.1" value="1.4" oninput="updateFormatting()">
+          </div>
+
+          <div class="form-group">
+            <label>المسافة بين الأسئلة (<span id="val-q-space">2</span> mm)</label>
+            <input type="range" id="cfg-space" min="0" max="8" step="0.5" value="2" oninput="updateFormatting()">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="preview-section">
+      <div class="preview-header-bar">
+        <span>معاينة ورقة الامتحان</span>
+        <span>قياس A4</span>
+      </div>
+
+      <div class="a4-wrapper" id="a4-wrapper"></div>
+    </div>
+
+  </div>
+
+  <script>
+    let teachers = ["محمد الراوي"];
+
+    let questions = [
+      {
+        id: 1,
+        title: "السؤال 1 / (القواعد)",
+        score: 37.5,
+        type: "sub",
+        branches: [
+          { text: "علل اثنين مما يأتي:\nأ) يسلتنس لسى لسلس لكس ل", score: 12.5 },
+          { text: "ب) خفسحلخص صل خحتص قاصق خحلفص لجل سجقلفسلحخص فلتسقحل ل سخقلت نسفلختصل", score: 12.5 },
+          { text: "ج) سقلا فساق اقا يقايقفا فايايفا", score: 12.5 }
+        ],
+        answerLines: 0,
+        branchStyle: "أ. ب. ج",
+        newPage: false,
+        autoSum: true,
+        showExtra: false,
+        collapsed: false
+      },
+      {
+        id: 2,
+        title: "السؤال 2 / (الأدب والنصوص)",
+        score: 25,
+        type: "sub",
+        branches: [
+          { text: "خفسحلخص صل خحتص قاصق خحلفص لجل سجقلفسلحخص فلتسقحل ل سخقلت نسفلختصل", score: 10 },
+          { text: "خسفجلن سخقلت خحسقلت سق (1)", score: 15 }
+        ],
+        answerLines: 0,
+        branchStyle: "أ. ب. ج",
+        newPage: false,
+        autoSum: true,
+        showExtra: false,
+        collapsed: false
+      }
+    ];
+
+    const branchSymbols = {
+      "أ. ب. ج": ["أ)", "ب)", "ج)", "د)", "هـ)", "و)", "ز)"],
+      "1. 2. 3": ["1)", "2)", "3)", "4)", "5)", "6)", "7)"],
+      "أولاً. ثانياً": ["أولاً:", "ثانياً:", "ثالثاً:", "رابعاً:", "خامساً:"]
+    };
+
+    function switchTab(tabNum) {
+      document.querySelectorAll('.tab-pane').forEach(function(el) { el.classList.remove('active'); });
+      document.querySelectorAll('.step-item').forEach(function(el) { el.classList.remove('active'); });
+      document.getElementById('tab-' + tabNum).classList.add('active');
+      document.getElementById('step-btn-' + tabNum).classList.add('active');
+    }
+
+    function parseMarkdown(text) {
+      if (!text) return "";
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        .replace(/__(.*?)__/g, '<u>$1</u>');
+    }
+
+    function insertFormattingTag(elemId, tag) {
+      const txt = document.getElementById(elemId);
+      if (!txt) return;
+      const start = txt.selectionStart;
+      const end = txt.selectionEnd;
+      const val = txt.value;
+      const selected = val.substring(start, end) || "نص";
+      txt.value = val.substring(0, start) + tag + selected + tag + val.substring(end);
+      txt.focus();
+      txt.dispatchEvent(new Event('input'));
+    }
+
+    function renderTeachersInputs() {
+      const container = document.getElementById('teachers-inputs-container');
+      container.innerHTML = '';
+      teachers.forEach(function(t, i) {
+        const row = document.createElement('div');
+        row.className = 'teacher-item-row';
+        row.innerHTML = '<input type="text" value="' + t + '" placeholder="اسم المدرس" oninput="teachers[' + i + '] = this.value; updateExamData();">' +
+          (teachers.length > 1 ? '<button class="btn-delete-icon" onclick="removeTeacherField(' + i + ')">×</button>' : '');
+        container.appendChild(row);
+      });
+    }
+
+    function addTeacherField() {
+      teachers.push("");
+      renderTeachersInputs();
+      updateExamData();
+    }
+
+    function removeTeacherField(i) {
+      teachers.splice(i, 1);
+      renderTeachersInputs();
+      updateExamData();
+    }
+
+    function toggleExtraOptions(idx) {
+      questions[idx].showExtra = !questions[idx].showExtra;
+      const content = document.getElementById('extra-options-content-' + idx);
+      if (content) {
+        if (questions[idx].showExtra) {
+          content.classList.add('open');
+        } else {
+          content.classList.remove('open');
+        }
+      }
+    }
+
+    /* أزرار التحكم بالسؤال: تحريك، نسخ، حذف، وتكبير/تصغير */
+    function moveQuestionUp(idx) {
+      if (idx === 0) return;
+      const temp = questions[idx];
+      questions[idx] = questions[idx - 1];
+      questions[idx - 1] = temp;
+      buildEditorInputs();
+      renderPreviewPages();
+    }
+
+    function moveQuestionDown(idx) {
+      if (idx === questions.length - 1) return;
+      const temp = questions[idx];
+      questions[idx] = questions[idx + 1];
+      questions[idx + 1] = temp;
+      buildEditorInputs();
+      renderPreviewPages();
+    }
+
+    function duplicateQuestion(idx) {
+      const q = questions[idx];
+      const copied = JSON.parse(JSON.stringify(q));
+      copied.id = Date.now();
+      copied.title = q.title + " (نسخة)";
+      questions.splice(idx + 1, 0, copied);
+      buildEditorInputs();
+      renderPreviewPages();
+    }
+
+    function toggleCollapseQuestion(idx) {
+      questions[idx].collapsed = !questions[idx].collapsed;
+      buildEditorInputs();
+    }
+
+    function updateExamData() {
+      renderPreviewPages();
+    }
+
+    function renderPreviewPages() {
+      const wrapper = document.getElementById('a4-wrapper');
+      wrapper.innerHTML = '';
+
+      let pageNum = 1;
+      let currentPage = createPageElement(pageNum);
+      wrapper.appendChild(currentPage);
+      let qContainer = currentPage.querySelector('.paper-questions');
+
+      let totalExamScore = 0;
+
+      questions.forEach(function(q, idx) {
+        if (q.type === 'sub' && q.autoSum) {
+          q.score = q.branches.reduce(function(acc, b) { return acc + (parseFloat(b.score) || 0); }, 0);
+          const inputEl = document.getElementById('q-score-' + idx);
+          if (inputEl) inputEl.value = q.score;
+        }
+        totalExamScore += parseFloat(q.score || 0);
+
+        const qDiv = document.createElement('div');
+        qDiv.className = 'paper-q-item';
+        const symbols = branchSymbols[q.branchStyle || "أ. ب. ج"];
+
+        let branchesHTML = '';
+        if (q.type === 'sub') {
+          branchesHTML = q.branches.map(function(b, i) {
+            return '<div class="branch-item-row">' +
+              '<div class="branch-text">' + (b.text.includes('\n') ? parseMarkdown(b.text) : '<b>' + symbols[i % symbols.length] + '</b> ' + parseMarkdown(b.text)) + '</div>' +
+              (b.score ? '<span>(' + b.score + ' درجة)</span>' : '') +
+              '</div>';
+          }).join('');
+        }
+
+        let linesHTML = '';
+        if (q.answerLines > 0) {
+          for (let l = 0; l < q.answerLines; l++) {
+            linesHTML += '<div class="answer-line"></div>';
+          }
+        }
+
+        qDiv.innerHTML = '<div class="paper-q-title">' +
+          '<span>' + parseMarkdown(q.title) + '</span>' +
+          '<span>(' + q.score + ' درجة)</span>' +
+          '</div>' +
+          '<div class="paper-q-sub">' + branchesHTML + linesHTML + '</div>';
+
+        if (q.newPage && idx > 0) {
+          pageNum++;
+          currentPage = createPageElement(pageNum);
+          wrapper.appendChild(currentPage);
+          qContainer = currentPage.querySelector('.paper-questions');
+        }
+
+        qContainer.appendChild(qDiv);
+
+        if (currentPage.scrollHeight > currentPage.clientHeight + 2) {
+          qContainer.removeChild(qDiv);
+          pageNum++;
+          currentPage = createPageElement(pageNum);
+          wrapper.appendChild(currentPage);
+          qContainer = currentPage.querySelector('.paper-questions');
+          qContainer.appendChild(qDiv);
+        }
+      });
+
+      document.getElementById('sum-score').innerText = totalExamScore;
+      document.getElementById('sum-q-count').innerText = questions.length + ' أسئلة';
+      document.getElementById('sum-p-count').innerText = pageNum + ' صفحة';
+    }
+
+    function createPageElement(pageNum) {
+      const page = document.createElement('div');
+      page.className = 'a4-sheet';
+      
+      const ministry = (document.getElementById('in-ministry') ? document.getElementById('in-ministry').value : '').trim();
+      const directorate = (document.getElementById('in-directorate') ? document.getElementById('in-directorate').value : '').trim();
+      const school = (document.getElementById('in-school') ? document.getElementById('in-school').value : '').trim();
+      const grade = (document.getElementById('in-grade') ? document.getElementById('in-grade').value : '').trim();
+      const subject = (document.getElementById('in-subject') ? document.getElementById('in-subject').value : '').trim();
+      const date = (document.getElementById('in-date') ? document.getElementById('in-date').value : '').trim();
+      const time = (document.getElementById('in-time') ? document.getElementById('in-time').value : '').trim();
+      const note = (document.getElementById('in-note') ? document.getElementById('in-note').value : '').trim();
+      const closingRemark = (document.getElementById('in-footer-closing') ? document.getElementById('in-footer-closing').value : '').trim() || 'مع تمنايتنا لكم بالنجاح والتوفيق';
+
+      let leftInfo = '';
+      if (grade) leftInfo += '<div>الصف: ' + grade + '</div>';
+      if (subject) leftInfo += '<div>المادة: ' + subject + '</div>';
+      if (date) leftInfo += '<div>التاريخ: ' + date + '</div>';
+      if (time) leftInfo += '<div>الزمن: ' + time + '</div>';
+
+      let rightInfo = '';
+      if (ministry) rightInfo += '<div>' + ministry + '</div>';
+      if (directorate) rightInfo += '<div>' + directorate + '</div>';
+      if (school) rightInfo += '<div>' + school + '</div>';
+
+      const filteredTeachers = teachers.filter(function(t) { return t.trim() !== ''; });
+      let teachersText = filteredTeachers.length > 1 ? 'مدرسو المادة: ' : 'مدرس المادة: ';
+      teachersText += filteredTeachers.join(' - ');
+
+      page.innerHTML = '<div class="paper-frame">' +
+        '<div class="exam-header-grid">' +
+        '<div class="header-right-col">' + rightInfo + '</div>' +
+        '<div><div>بسم الله الرحمن الرحيم</div><div>الفصل الأول / الشهر الأول</div><div>2026 - 2027</div></div>' +
+        '<div style="text-align: left;">' + leftInfo + '</div>' +
+        '</div>' +
+        (note ? '<div class="note-line">' + note + '</div>' : '') +
+        '<div class="paper-questions"></div>' +
+        '<div class="paper-footer"><div>' + teachersText + '</div><div>' + closingRemark + '</div></div>' +
+        '</div>';
+      return page;
+    }
+
+    function buildEditorInputs() {
+      const builderList = document.getElementById('questions-builder-list');
+      builderList.innerHTML = '';
+
+      questions.forEach(function(q, idx) {
+        const symbols = branchSymbols[q.branchStyle || "أ. ب. ج"];
+        const qBox = document.createElement('div');
+        qBox.className = 'q-box';
+
+        const formattedNum = (idx + 1) < 10 ? '0' + (idx + 1) : (idx + 1);
+
+        let branchesSection = '';
+        if (q.type === 'sub') {
+          branchesSection = '<div class="branches-container">' +
+            q.branches.map(function(b, bIdx) {
+              return '<div class="branch-input-box">' +
+                '<span style="font-weight:bold; width:20px; flex-shrink:0;">' + symbols[bIdx % symbols.length] + '</span>' +
+                '<textarea rows="2" id="q-branch-txt-' + idx + '-' + bIdx + '" placeholder="نص الفرع..." oninput="questions[' + idx + '].branches[' + bIdx + '].text = this.value; renderPreviewPages();">' + b.text + '</textarea>' +
+                '<input type="number" step="0.5" class="branch-score-input" value="' + b.score + '" placeholder="الدرجة" oninput="questions[' + idx + '].branches[' + bIdx + '].score = parseFloat(this.value)||0; renderPreviewPages();">' +
+                '<button class="btn-delete-icon" onclick="removeBranch(' + idx + ', ' + bIdx + ')">×</button>' +
+                '</div>';
+            }).join('') +
+            '<button class="add-branch-btn" onclick="addBranch(' + idx + ')">+ إضافة فرع</button>' +
+            '</div>';
+        }
+
+        const isOpen = q.showExtra ? 'open' : '';
+        const collapseIcon = q.collapsed ? '˅' : '˄';
+
+        let bodyContent = '';
+        if (!q.collapsed) {
+          bodyContent = '<div class="form-row">' +
+            '<div class="form-group">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+            '<label>عنوان السؤال</label>' +
+            '<div class="text-format-toolbar">' +
+            '<button class="format-btn" onclick="insertFormattingTag(\'q-title-txt-' + idx + '\', \'**\')">عريض **</button>' +
+            '<button class="format-btn" onclick="insertFormattingTag(\'q-title-txt-' + idx + '\', \'__\')">تسطير __</button>' +
+            '</div>' +
+            '</div>' +
+            '<textarea rows="2" id="q-title-txt-' + idx + '" oninput="questions[' + idx + '].title = this.value; renderPreviewPages();">' + q.title + '</textarea>' +
+            '</div>' +
+            '<div class="form-group">' +
+            '<label>درجة السؤال الكلية</label>' +
+            '<input type="number" step="0.5" id="q-score-' + idx + '" value="' + q.score + '" oninput="questions[' + idx + '].score = parseFloat(this.value)||0; renderPreviewPages();">' +
+            '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+            '<label>نوع السؤال</label>' +
+            '<select onchange="questions[' + idx + '].type = this.value; buildEditorInputs(); renderPreviewPages();">' +
+            '<option value="sub" ' + (q.type==='sub'?'selected':'') + '>سؤال بفروع</option>' +
+            '<option value="essay" ' + (q.type==='essay'?'selected':'') + '>سؤال مقالي عادي</option>' +
+            '</select>' +
+            '</div>' +
+            branchesSection +
+            '<div class="form-row" style="margin-top:0.4rem;">' +
+            '<div class="form-group">' +
+            '<label>عدد أسطر الإجابة</label>' +
+            '<input type="number" value="' + (q.answerLines || 0) + '" min="0" oninput="questions[' + idx + '].answerLines = parseInt(this.value)||0; renderPreviewPages();">' +
+            '</div>' +
+            '<div class="form-group">' +
+            '<label>ترقيم الفروع</label>' +
+            '<select onchange="questions[' + idx + '].branchStyle = this.value; buildEditorInputs(); renderPreviewPages();">' +
+            '<option value="أ. ب. ج" ' + ((q.branchStyle||"أ. ب. ج")==='أ. ب. ج'?'selected':'') + '>أ . ب . ج</option>' +
+            '<option value="1. 2. 3" ' + (q.branchStyle==='1. 2. 3'?'selected':'') + '>1 . 2 . 3</option>' +
+            '<option value="أولاً. ثانياً" ' + (q.branchStyle==='أولاً. ثانياً'?'selected':'') + '>أولاً . ثانياً</option>' +
+            '</select>' +
+            '</div>' +
+            '</div>' +
+            '<div>' +
+            '<button class="extra-options-toggle" onclick="toggleExtraOptions(' + idx + ')">⚙️ خيارات أخرى</button>' +
+            '<div class="extra-options-content ' + isOpen + '" id="extra-options-content-' + idx + '">' +
+            '<label class="checkbox-label-right">' +
+            '<input type="checkbox" ' + (q.newPage ? 'checked' : '') + ' onchange="questions[' + idx + '].newPage = this.checked; renderPreviewPages();">' +
+            '<span>بدء السؤال في صفحة جديدة</span>' +
+            '</label>' +
+            '<label class="checkbox-label-right">' +
+            '<input type="checkbox" ' + (q.autoSum !== false ? 'checked' : '') + ' onchange="questions[' + idx + '].autoSum = this.checked; renderPreviewPages();">' +
+            '<span>جمع درجات الفروع تلقائياً</span>' +
+            '</label>' +
+            '</div>' +
+            '</div>';
+        } else {
+          /* العرض المصغر الشبيه بالصورة الأولى */
+          bodyContent = '<div style="display:flex; justify-content:space-between; align-items:center; color:var(--text-muted); font-size:0.85rem; padding-top:0.2rem;">' +
+            '<span style="font-weight:700; color:var(--text-dark);">' + parseMarkdown(q.title) + '</span>' +
+            '<span>' + q.score + ' درجة</span>' +
+            '</div>';
+        }
+
+        qBox.innerHTML = '<div class="q-box-header">' +
+          '<div class="q-box-header-left">' +
+          '<button class="action-icon-btn" title="نقل السؤال للأعلى" onclick="moveQuestionUp(' + idx + ')">▲</button>' +
+          '<button class="action-icon-btn" title="نقل السؤال للأسفل" onclick="moveQuestionDown(' + idx + ')">▼</button>' +
+          '<button class="action-icon-btn" title="نسخ السؤال" onclick="duplicateQuestion(' + idx + ')">📋</button>' +
+          '<button class="action-icon-btn btn-delete" title="حذف السؤال" onclick="removeQuestion(' + idx + ')">🗑️</button>' +
+          '<button class="action-icon-btn" title="' + (q.collapsed ? 'تكبير السؤال' : 'تصغير السؤال') + '" onclick="toggleCollapseQuestion(' + idx + ')">' + collapseIcon + '</button>' +
+          '</div>' +
+          '<div class="q-box-header-right">' +
+          '<span class="q-num-badge">' + formattedNum + '</span>' +
+          '</div>' +
+          '</div>' +
+          bodyContent;
+
+        builderList.appendChild(qBox);
+      });
+    }
+
+    function addBranch(qIdx) {
+      questions[qIdx].branches.push({ text: "", score: 10 });
+      buildEditorInputs();
+      renderPreviewPages();
+    }
+
+    function removeBranch(qIdx, bIdx) {
+      questions[qIdx].branches.splice(bIdx, 1);
+      buildEditorInputs();
+      renderPreviewPages();
+    }
+
+    function addQuestion() {
+      questions.push({
+        id: Date.now(),
+        title: "السؤال " + (questions.length + 1) + " /",
+        score: 20,
+        type: "sub",
+        branches: [{ text: "", score: 10 }],
+        answerLines: 0,
+        branchStyle: "أ. ب. ج",
+        newPage: false,
+        autoSum: true,
+        showExtra: false,
+        collapsed: false
+      });
+      buildEditorInputs();
+      renderPreviewPages();
+    }
+
+    function removeQuestion(idx) {
+      questions.splice(idx, 1);
+      buildEditorInputs();
+      renderPreviewPages();
+    }
+
+    function updateFormatting() {
+      const font = document.getElementById('cfg-font').value;
+      const borderStyle = document.getElementById('cfg-border-style').value;
+      const size = document.getElementById('cfg-size').value;
+      const line = document.getElementById('cfg-line').value;
+      const space = document.getElementById('cfg-space').value;
+
+      document.getElementById('val-font-size').innerText = size;
+      document.getElementById('val-line-height').innerText = line;
+      document.getElementById('val-q-space').innerText = space;
+
+      const root = document.documentElement;
+      root.style.setProperty('--paper-font', font);
+      root.style.setProperty('--paper-border-style', borderStyle);
+      root.style.setProperty('--paper-font-size', size + 'pt');
+      root.style.setProperty('--paper-line-height', line);
+      root.style.setProperty('--paper-q-space', space + 'mm');
+
+      renderPreviewPages();
+    }
+
+    function resetForm() {
+      if (confirm("هل تريد إفراغ النموذج وفتح امتحان جديد؟")) {
+        location.reload();
+      }
+    }
+
+    window.onload = function() {
+      renderTeachersInputs();
+      buildEditorInputs();
+      updateFormatting();
+    };
+  </script>
+</body>
+</html>
